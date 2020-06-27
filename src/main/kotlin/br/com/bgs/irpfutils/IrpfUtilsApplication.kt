@@ -1,11 +1,11 @@
-package com.example.demo
+package br.com.bgs.irpfutils
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class DemoApplication
+class IrpfUtilsApplication
 
 fun main(args: Array<String>) {
-	runApplication<DemoApplication>(*args)
+	runApplication<IrpfUtilsApplication>(*args)
 }
