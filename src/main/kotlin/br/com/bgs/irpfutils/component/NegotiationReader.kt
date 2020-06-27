@@ -3,7 +3,6 @@ package br.com.bgs.irpfutils.component
 import br.com.bgs.irpfutils.domain.Negotiation
 import io.github.jonathanlink.PDFLayoutTextStripper
 import org.apache.pdfbox.pdmodel.PDDocument
-import org.apache.pdfbox.text.PDFTextStripper
 import org.springframework.batch.item.file.ResourceAwareItemReaderItemStream
 import org.springframework.batch.item.support.AbstractItemCountingItemStreamItemReader
 import org.springframework.core.io.Resource
@@ -27,7 +26,6 @@ class NegotiationReader(private var resource: Resource? = null): AbstractItemCou
     }
 
     override fun doRead(): Negotiation {
-        val stripper = PDFTextStripper()
         val pdfTextStripper = PDFLayoutTextStripper()
         val text = pdfTextStripper.getText(document)
         println(text)
@@ -40,7 +38,7 @@ class NegotiationReader(private var resource: Resource? = null): AbstractItemCou
     }
 
     override fun doClose() {
-        this.document!!.close()
+        this.document?.run { close() }
     }
 
     override fun setResource(resource: Resource) {

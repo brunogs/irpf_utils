@@ -9,7 +9,6 @@ import org.springframework.batch.core.configuration.annotation.EnableBatchProces
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory
 import org.springframework.batch.core.launch.support.RunIdIncrementer
-import org.springframework.batch.item.database.JdbcBatchItemWriter
 import org.springframework.batch.item.file.MultiResourceItemReader
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -27,7 +26,7 @@ class BatchConfig(
 ) {
 
     @Bean
-    fun importUserJob(step1: Step): Job {
+    fun importNegotiationFiles(step1: Step): Job {
         return jobBuilderFactory.get("importNegotiationFiles")
             .incrementer(RunIdIncrementer())
             .flow(step1)
@@ -36,7 +35,7 @@ class BatchConfig(
     }
 
     @Bean
-    fun step1(): Step? {
+    fun step1(): Step {
         return stepBuilderFactory["step1"]
             .chunk<Negotiation, Negotiation>(1)
             .reader(multiResourceReader())
@@ -47,8 +46,11 @@ class BatchConfig(
     @Bean
     fun multiResourceReader(): MultiResourceItemReader<Negotiation> {
         val resourceItemReader = MultiResourceItemReader<Negotiation>()
+        resourceItemReader.setName("negotitationsPdf")
         resourceItemReader.setResources(inputResources)
-        resourceItemReader.setDelegate(NegotiationReader())
+        val negotiationReader = NegotiationReader()
+        negotiationReader.setName("negotatiationReader")
+        resourceItemReader.setDelegate(negotiationReader)
         return resourceItemReader
     }
 
