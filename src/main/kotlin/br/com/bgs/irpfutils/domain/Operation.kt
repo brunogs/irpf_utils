@@ -9,5 +9,6 @@ data class Operation(
     var quantity: Int? = null,
     var unitPrice: BigDecimal? = null,
     var operationPrice: BigDecimal? = null,
-    var operationDate: String? = null
+    var operationDate: String? = null,
+    var averagePrice: BigDecimal? = null
 )
