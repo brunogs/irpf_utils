@@ -3,11 +3,11 @@ package br.com.bgs.irpfutils.domain
 import java.math.BigDecimal
 
 data class Operation(
-    val operationType: OperationType,
-    val market: String,
-    val title: String,
-    val quantity: Int,
-    val unitPrice: BigDecimal,
-    val operationPrice: BigDecimal,
+    var operationType: OperationType? = null,
+    var market: String? = null,
+    var title: String? = null,
+    var quantity: Int? = null,
+    var unitPrice: BigDecimal? = null,
+    var operationPrice: BigDecimal? = null,
     var operationDate: String? = null
 )

@@ -33,26 +33,26 @@ class NegotiationPdfImporterBatchConfig(
 ) {
 
     @Bean
-    fun negotiationPdfImporter(step1: Step): Job {
+    fun negotiationPdfImporter(negotiationStep: Step): Job {
         return jobBuilderFactory.get("negotiationPdfImporter")
             .incrementer(RunIdIncrementer())
-            .flow(step1)
+            .flow(negotiationStep)
             .end()
             .build()
     }
 
     @Bean
-    fun step1(): Step {
-        return stepBuilderFactory["step1"]
+    fun negotiationStep(): Step {
+        return stepBuilderFactory["negotiationStep"]
             .chunk<Negotiation, Collection<Operation>>(1)
-            .reader(multiResourceReader())
+            .reader(negotatiationOperationsReader())
             .processor(NegotiationOperationProcessor())
-            .writer(writer())
+            .writer(negotiationOperationsWriter())
             .build()
     }
 
     @Bean
-    fun multiResourceReader(): MultiResourceItemReader<Negotiation> {
+    fun negotatiationOperationsReader(): MultiResourceItemReader<Negotiation> {
         val negotiationReader = NegotiationReader().apply {
             setName("negotatiationReader")
         }
@@ -64,7 +64,7 @@ class NegotiationPdfImporterBatchConfig(
     }
 
     @Bean
-    fun writer(): FlatFileItemWriter<Collection<Operation>> {
+    fun negotiationOperationsWriter(): FlatFileItemWriter<Collection<Operation>> {
         val outputResource = FileSystemResource(operationsOutputPath)
         val operationLine = DelimitedLineAggregator<Operation>().apply {
             setDelimiter(",")
