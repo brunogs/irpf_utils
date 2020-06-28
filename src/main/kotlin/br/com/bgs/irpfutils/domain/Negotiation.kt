@@ -7,5 +7,6 @@ data class Negotiation(
     val operations: List<Operation>,
     val netValueOperations: BigDecimal,
     val settlementTax: BigDecimal,
-    val registerTax: BigDecimal
+    val registerTax: BigDecimal,
+    val negotiationDate: String
 )

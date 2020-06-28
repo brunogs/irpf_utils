@@ -42,6 +42,8 @@ class NegotiationReader(private var resource: Resource? = null): AbstractItemCou
             val pdfTextStripper = PDFLayoutTextStripper()
             this.pdfContent = pdfTextStripper.getText(document)
 
+            val negotiationDate = this.pdfContent!!.split("\\n".toRegex())[3].substring(130, 140)
+
             val operationsTitle = "Negócios  realizados"
             val startOfOperations = this.pdfContent!!.indexOf(operationsTitle)
             val lines = this.pdfContent!!.substring(startOfOperations + operationsTitle.length).split("\\n".toRegex())
@@ -59,8 +61,8 @@ class NegotiationReader(private var resource: Resource? = null): AbstractItemCou
                         market = market,
                         title = title.trim().dropLast(1).trim(),
                         quantity = numbers[QUANTITY].trim().toInt(),
-                        unitPrice = BigDecimal(numbers[UNIT_PRICE].trim().replace(".", "").replace(",", ".")),
-                        operationPrice = BigDecimal(numbers[OPERATION_PRICE].trim().replace(".", "").replace(",", "."))
+                        unitPrice = BigDecimal(numbers[UNIT_PRICE].formatDecimal()),
+                        operationPrice = BigDecimal(numbers[OPERATION_PRICE].formatDecimal())
                     )
                 }
 
@@ -68,7 +70,8 @@ class NegotiationReader(private var resource: Resource? = null): AbstractItemCou
                 operations = operations,
                 netValueOperations = BigDecimal.ZERO,
                 settlementTax = BigDecimal.ZERO,
-                registerTax = BigDecimal.ZERO
+                registerTax = BigDecimal.ZERO,
+                negotiationDate = negotiationDate
             )
         } else {
             null
@@ -83,4 +86,6 @@ class NegotiationReader(private var resource: Resource? = null): AbstractItemCou
         this.resource = resource
         this.pdfContent = null
     }
+
+    fun String.formatDecimal() = this.trim().replace(".", "").replace(",", ".")
 }
