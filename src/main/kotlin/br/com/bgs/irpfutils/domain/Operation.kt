@@ -8,5 +8,6 @@ data class Operation(
     val title: String,
     val quantity: Int,
     val unitPrice: BigDecimal,
-    val operationPrice: BigDecimal
+    val operationPrice: BigDecimal,
+    var operationDate: String? = null
 )
