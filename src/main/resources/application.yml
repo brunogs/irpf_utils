@@ -1,5 +1,4 @@
 negotiations:
   path: file:/Users/brunogomes/irpf/notas_corretagem/2019/*.pdf
-
 operations:
   output: /Users/brunogomes/irpf/notas_corretagem/2019/operations.csv

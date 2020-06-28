@@ -6,7 +6,6 @@ import br.com.bgs.irpfutils.domain.Negotiation
 import br.com.bgs.irpfutils.domain.Operation
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory
 import org.springframework.batch.core.launch.support.RunIdIncrementer
@@ -24,7 +23,7 @@ import org.springframework.core.io.Resource
 
 
 @Configuration
-class BatchConfig(
+class NegotiationPdfImporterBatchConfig(
     val jobBuilderFactory: JobBuilderFactory,
     val stepBuilderFactory: StepBuilderFactory,
     @Value("\${negotiations.path}")
@@ -34,8 +33,8 @@ class BatchConfig(
 ) {
 
     @Bean
-    fun importNegotiationFiles(step1: Step): Job {
-        return jobBuilderFactory.get("importNegotiationFiles")
+    fun negotiationPdfImporter(step1: Step): Job {
+        return jobBuilderFactory.get("negotiationPdfImporter")
             .incrementer(RunIdIncrementer())
             .flow(step1)
             .end()
@@ -67,11 +66,6 @@ class BatchConfig(
     @Bean
     fun writer(): FlatFileItemWriter<Collection<Operation>> {
         val outputResource = FileSystemResource(operationsOutputPath)
-
-        val writer = FlatFileItemWriter<Collection<Operation>>().apply {
-            setResource(outputResource)
-            setAppendAllowed(true)
-        }
         val operationLine = DelimitedLineAggregator<Operation>().apply {
             setDelimiter(",")
             setFieldExtractor(BeanWrapperFieldExtractor<Operation>().apply {
@@ -81,8 +75,14 @@ class BatchConfig(
         val lineAggregator: LineAggregator<Collection<Operation>> = RecursiveCollectionLineAggregator<Operation>().apply {
             setDelegate(operationLine)
         }
-
-        writer.setLineAggregator(lineAggregator)
-        return writer
+        return FlatFileItemWriter<Collection<Operation>>().apply {
+            setResource(outputResource)
+            setHeaderCallback { writer ->
+                writer.write("operationType, market, title, quantity, unitPrice, operationPrice, operationDate")
+            }
+            setAppendAllowed(false)
+            setShouldDeleteIfExists(true)
+            setLineAggregator(lineAggregator)
+        }
     }
 }
