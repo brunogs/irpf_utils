@@ -2,7 +2,7 @@ package br.com.bgs.irpfutils.domain
 
 object OperationAverage {
 
-    fun computeOperationsAverage(items: MutableSet<Operation>): List<OperationSummary> {
+    fun computeOperationsAverage(items: List<Operation>): List<OperationSummary> {
         val operationsGrouped = items.groupBy { it.title?.cleanupAcronyms() }
         return operationsGrouped.map {
             val operationsByCompany = it.value
@@ -16,6 +16,7 @@ object OperationAverage {
                 company = it.key!!,
                 averagePrice = averageOperations.averagePrice,
                 quantity = averageOperations.quantity,
+                cost = averageOperations.averagePrice * averageOperations.quantity,
                 firstPrice = operationsByCompany.first().unitPrice!!,
                 lastPrice = operationsByCompany.last().unitPrice!!
             )
@@ -24,5 +25,6 @@ object OperationAverage {
 
     private fun String?.cleanupAcronyms() = this?.replace(" (ON|CI|S|ERS|ER|ED|EJ|NM|N\\d)".toRegex(), "")
         ?.replace(" #(\\d+)?".toRegex(), "")
+        ?.replace("  +".toRegex(), " ")
         ?.trim()
 }

@@ -10,7 +10,7 @@ import org.springframework.batch.item.ItemWriter
 
 @JobScope
 class ConsoleItemWriter(
-    val items: MutableSet<Operation> = mutableSetOf()
+    val items: MutableList<Operation> = mutableListOf()
 ) : ItemWriter<Operation> {
 
     @Throws(Exception::class)
