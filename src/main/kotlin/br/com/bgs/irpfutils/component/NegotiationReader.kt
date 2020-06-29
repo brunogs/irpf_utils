@@ -44,27 +44,33 @@ class NegotiationReader(private var resource: Resource? = null): AbstractItemCou
 
             val negotiationDate = this.pdfContent!!.split("\\n".toRegex())[3].substring(130, 140)
 
-            val operationsTitle = "Negócios  realizados"
-            val startOfOperations = this.pdfContent!!.indexOf(operationsTitle)
-            val lines = this.pdfContent!!.substring(startOfOperations + operationsTitle.length).split("\\n".toRegex())
+            var operations = mutableListOf<Operation>()
 
-            val operations = lines.drop(2).takeWhile { it.contains("1-BOVESPA") }
-                .map {
-                    val (type, market, remainderContent) = NEGOTIATION_PATTERN.find(it)!!.destructured
-                    val numbers = NUMBERS_PATTERN.findAll(remainderContent).map { it.value }.toList()
-                    var title = remainderContent
-                    numbers.forEach {
-                        title = title.replace(it, "")
+            val operationsTitle = "Negócios  realizados"
+            while (this.pdfContent!!.indexOf(operationsTitle) != -1) {
+                val startOfOperations = this.pdfContent!!.indexOf(operationsTitle)
+                val lines = this.pdfContent!!.substring(startOfOperations + operationsTitle.length).split("\\n".toRegex())
+
+                val pageOperations = lines.drop(2).takeWhile { it.contains("1-BOVESPA") }
+                    .map {
+                        val (type, market, remainderContent) = NEGOTIATION_PATTERN.find(it)!!.destructured
+                        val numbers = NUMBERS_PATTERN.findAll(remainderContent).map { it.value }.toList()
+                        var title = remainderContent
+                        numbers.forEach {
+                            title = title.replace(it, "")
+                        }
+                        Operation(
+                            operationType = OperationType.valueOf(type),
+                            market = market,
+                            title = title.trim().dropLast(1).trim(),
+                            quantity = numbers[QUANTITY].trim().toInt(),
+                            unitPrice = BigDecimal(numbers[UNIT_PRICE].formatDecimal()),
+                            operationPrice = BigDecimal(numbers[OPERATION_PRICE].formatDecimal())
+                        )
                     }
-                    Operation(
-                        operationType = OperationType.valueOf(type),
-                        market = market,
-                        title = title.trim().dropLast(1).trim(),
-                        quantity = numbers[QUANTITY].trim().toInt(),
-                        unitPrice = BigDecimal(numbers[UNIT_PRICE].formatDecimal()),
-                        operationPrice = BigDecimal(numbers[OPERATION_PRICE].formatDecimal())
-                    )
-                }
+                operations.addAll(pageOperations)
+                this.pdfContent = this.pdfContent!!.replaceFirst(operationsTitle, "")
+            }
 
             Negotiation(
                 operations = operations,
