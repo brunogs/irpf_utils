@@ -3,7 +3,9 @@ package br.com.bgs.irpfutils.domain
 object OperationAverage {
 
     fun computeOperationsAverage(items: List<Operation>): List<OperationSummary> {
-        val operationsGrouped = items.groupBy { it.title?.cleanupAcronyms() }
+        val operationsGrouped = items
+            .filter { it.operationType == OperationType.C }
+            .groupBy { it.title?.cleanupAcronyms() }
         return operationsGrouped.map {
             val operationsByCompany = it.value
             val averageOperations = operationsByCompany.map { operation -> OperationQuantityPrice(operation.unitPrice!!, operation.quantity!!.toBigDecimal()) }
