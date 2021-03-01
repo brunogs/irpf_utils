@@ -1,5 +1,7 @@
 package br.com.bgs.irpfutils.domain
 
+import br.com.bgs.irpfutils.extensions.cleanupAcronyms
+
 object OperationAverage {
 
     fun computeOperationsAverage(items: List<Operation>): List<OperationSummary> {
@@ -25,8 +27,4 @@ object OperationAverage {
         }
     }
 
-    private fun String?.cleanupAcronyms() = this?.replace(" (ON|CI|S|ERS|ER|ED|EJ|NM|N\\d)".toRegex(), "")
-        ?.replace(" #(\\d+)?".toRegex(), "")
-        ?.replace("  +".toRegex(), " ")
-        ?.trim()
 }

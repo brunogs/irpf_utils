@@ -1,5 +1,8 @@
 negotiations:
-  path: file:/Users/brunogomes/irpf/notas_corretagem/2019/*.pdf
+  path: file:/Users/brunogomes/irpf/notas_corretagem/rico/consolidado/*.pdf
 operations:
-  output: /Users/brunogomes/irpf/notas_corretagem/2019/operations.csv
-  input: file:/Users/brunogomes/irpf/notas_corretagem/2019/operations.csv
+  output: /Users/brunogomes/irpf/notas_corretagem/rico/consolidado/operations.csv
+  input: file:/Users/brunogomes/irpf/notas_corretagem/rico/consolidado/operations.csv
+status-invest:
+  input: file:/Users/brunogomes/irpf/notas_corretagem/rico/consolidado/operations.csv
+  output: /Users/brunogomes/irpf/notas_corretagem/rico/consolidado/status-invest.csv
